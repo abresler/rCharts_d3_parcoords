@@ -1,0 +1,38 @@
+---
+title       : GARCH and MA Outperformance d3 Parallel Coordinates
+subtitle    : Applied to French Industry Data Set
+author      : TimelyPortfolio
+framework   : minimal       # {io2012, html5slides, shower, dzslides, ...}
+github: {user: timelyportfolio, repo: rCharts_morris_standalone, branch: "gh-pages"}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [parcoords]      # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+assets:
+  css: 
+    - "http://fonts.googleapis.com/css?family=Open+Sans"
+    - "http://fonts.googleapis.com/css?family=Open+Sans+Condensed:700"
+---
+
+
+---
+# GARCH and MA Outperformance
+# d3 Parallel Coordinates
+## Setup
+
+```{r results ="asis"}
+require(rCharts)
+
+cars <- read.csv('data/cars.csv')
+p1 <- rCharts$new()
+p1$field('lib', 'libraries/widgets/parcoords')
+p1$set(padding = list(top = 24, left = 0, bottom = 12, right = 200))
+p1$set(data = toJSONArray(cars, json = F), 
+  colorby = 'economy', 
+  range = range(cars$economy),
+  colors = c('steelblue', 'brown')
+)
+p1
+p1$print('chart')
+```
+

@@ -1,0 +1,965 @@
+---
+title       : GARCH and MA Outperformance d3 Parallel Coordinates
+subtitle    : Applied to French Industry Data Set
+author      : TimelyPortfolio
+framework   : minimal       # {io2012, html5slides, shower, dzslides, ...}
+github: {user: timelyportfolio, repo: rCharts_morris_standalone, branch: "gh-pages"}
+highlighter : highlight.js  # {highlight.js, prettify, highlight}
+hitheme     : tomorrow      # 
+widgets     : [parcoords]      # {mathjax, quiz, bootstrap}
+mode        : selfcontained # {standalone, draft}
+assets:
+  css: 
+    - "http://fonts.googleapis.com/css?family=Open+Sans"
+    - "http://fonts.googleapis.com/css?family=Open+Sans+Condensed:700"
+---
+
+
+---
+# GARCH and MA Outperformance d3 Parallel Coordinates
+## Setup
+
+
+```r
+require(rCharts)
+
+cars <- read.csv("data/cars.csv")
+p1 <- rCharts$new()
+p1$field("lib", "libraries/widgets/parcoords")
+p1$set(padding = list(top = 24, left = 0, bottom = 12, right = 200))
+p1$set(data = toJSONArray(cars, json = F), colorby = "economy", range = range(cars$economy), 
+    colors = c("steelblue", "brown"))
+p1
+p1$print("chart")
+```
+
+<div id='chart' class='rChart nvd3Plot parcoords'></div>
+<script id="brushing">
+var params = {
+ "dom": "chart",
+"width":    800,
+"height":    400,
+"padding": {
+ "top":     24,
+"left":      0,
+"bottom":     12,
+"right":    200 
+},
+"data": [
+ {
+ "name": "AMC Ambassador Brougham",
+"economy":     13,
+"cylinders": 8,
+"displacement": 360,
+"power": 175,
+"weight": 3821,
+"zero_to_sixty_mph":     11,
+"year": 73 
+},
+{
+ "name": "AMC Ambassador DPL",
+"economy":     15,
+"cylinders": 8,
+"displacement": 390,
+"power": 190,
+"weight": 3850,
+"zero_to_sixty_mph":    8.5,
+"year": 70 
+},
+{
+ "name": "AMC Ambassador SST",
+"economy":     17,
+"cylinders": 8,
+"displacement": 304,
+"power": 150,
+"weight": 3672,
+"zero_to_sixty_mph":   11.5,
+"year": 72 
+},
+{
+ "name": "AMC Concord DL 6",
+"economy":   20.2,
+"cylinders": 6,
+"displacement": 232,
+"power": 90,
+"weight": 3265,
+"zero_to_sixty_mph":   18.2,
+"year": 79 
+},
+{
+ "name": "AMC Concord DL",
+"economy":   18.1,
+"cylinders": 6,
+"displacement": 258,
+"power": 120,
+"weight": 3410,
+"zero_to_sixty_mph":   15.1,
+"year": 78 
+},
+{
+ "name": "AMC Concord DL",
+"economy":     23,
+"cylinders": 4,
+"displacement": 151,
+"power": null,
+"weight": 3035,
+"zero_to_sixty_mph":   20.5,
+"year": 82 
+},
+{
+ "name": "AMC Concord",
+"economy":   19.4,
+"cylinders": 6,
+"displacement": 232,
+"power": 90,
+"weight": 3210,
+"zero_to_sixty_mph":   17.2,
+"year": 78 
+},
+{
+ "name": "AMC Concord",
+"economy":   24.3,
+"cylinders": 4,
+"displacement": 151,
+"power": 90,
+"weight": 3003,
+"zero_to_sixty_mph":   20.1,
+"year": 80 
+},
+{
+ "name": "AMC Gremlin",
+"economy":     18,
+"cylinders": 6,
+"displacement": 232,
+"power": 100,
+"weight": 2789,
+"zero_to_sixty_mph":     15,
+"year": 73 
+},
+{
+ "name": "AMC Gremlin",
+"economy":     19,
+"cylinders": 6,
+"displacement": 232,
+"power": 100,
+"weight": 2634,
+"zero_to_sixty_mph":     13,
+"year": 71 
+},
+{
+ "name": "AMC Gremlin",
+"economy":     20,
+"cylinders": 6,
+"displacement": 232,
+"power": 100,
+"weight": 2914,
+"zero_to_sixty_mph":     16,
+"year": 75 
+},
+{
+ "name": "AMC Gremlin",
+"economy":     21,
+"cylinders": 6,
+"displacement": 199,
+"power": 90,
+"weight": 2648,
+"zero_to_sixty_mph":     15,
+"year": 70 
+},
+{
+ "name": "AMC Hornet Sportabout (Wagon)",
+"economy":     18,
+"cylinders": 6,
+"displacement": 258,
+"power": 110,
+"weight": 2962,
+"zero_to_sixty_mph":   13.5,
+"year": 71 
+},
+{
+ "name": "AMC Hornet",
+"economy":     18,
+"cylinders": 6,
+"displacement": 199,
+"power": 97,
+"weight": 2774,
+"zero_to_sixty_mph":   15.5,
+"year": 70 
+},
+{
+ "name": "AMC Hornet",
+"economy":     18,
+"cylinders": 6,
+"displacement": 232,
+"power": 100,
+"weight": 2945,
+"zero_to_sixty_mph":     16,
+"year": 73 
+},
+{
+ "name": "AMC Hornet",
+"economy":     19,
+"cylinders": 6,
+"displacement": 232,
+"power": 100,
+"weight": 2901,
+"zero_to_sixty_mph":     16,
+"year": 74 
+},
+{
+ "name": "AMC Hornet",
+"economy":   22.5,
+"cylinders": 6,
+"displacement": 232,
+"power": 90,
+"weight": 3085,
+"zero_to_sixty_mph":   17.6,
+"year": 76 
+},
+{
+ "name": "AMC Matador (Wagon)",
+"economy":     14,
+"cylinders": 8,
+"displacement": 304,
+"power": 150,
+"weight": 4257,
+"zero_to_sixty_mph":   15.5,
+"year": 74 
+},
+{
+ "name": "AMC Matador (Wagon)",
+"economy":     15,
+"cylinders": 8,
+"displacement": 304,
+"power": 150,
+"weight": 3892,
+"zero_to_sixty_mph":   12.5,
+"year": 72 
+},
+{
+ "name": "AMC Matador",
+"economy":     14,
+"cylinders": 8,
+"displacement": 304,
+"power": 150,
+"weight": 3672,
+"zero_to_sixty_mph":   11.5,
+"year": 73 
+},
+{
+ "name": "AMC Matador",
+"economy":     15,
+"cylinders": 6,
+"displacement": 258,
+"power": 110,
+"weight": 3730,
+"zero_to_sixty_mph":     19,
+"year": 75 
+},
+{
+ "name": "AMC Matador",
+"economy":   15.5,
+"cylinders": 8,
+"displacement": 304,
+"power": 120,
+"weight": 3962,
+"zero_to_sixty_mph":   13.9,
+"year": 76 
+},
+{
+ "name": "AMC Matador",
+"economy":     16,
+"cylinders": 6,
+"displacement": 258,
+"power": 110,
+"weight": 3632,
+"zero_to_sixty_mph":     18,
+"year": 74 
+},
+{
+ "name": "AMC Matador",
+"economy":     18,
+"cylinders": 6,
+"displacement": 232,
+"power": 100,
+"weight": 3288,
+"zero_to_sixty_mph":   15.5,
+"year": 71 
+},
+{
+ "name": "AMC Pacer D/L",
+"economy":   17.5,
+"cylinders": 6,
+"displacement": 258,
+"power": 95,
+"weight": 3193,
+"zero_to_sixty_mph":   17.8,
+"year": 76 
+},
+{
+ "name": "AMC Pacer",
+"economy":     19,
+"cylinders": 6,
+"displacement": 232,
+"power": 90,
+"weight": 3211,
+"zero_to_sixty_mph":     17,
+"year": 75 
+},
+{
+ "name": "AMC Rebel SST",
+"economy":     16,
+"cylinders": 8,
+"displacement": 304,
+"power": 150,
+"weight": 3433,
+"zero_to_sixty_mph":     12,
+"year": 70 
+},
+{
+ "name": "AMC Spirit DL",
+"economy":   27.4,
+"cylinders": 4,
+"displacement": 121,
+"power": 80,
+"weight": 2670,
+"zero_to_sixty_mph":     15,
+"year": 79 
+},
+{
+ "name": "Audi 100 LS",
+"economy":     20,
+"cylinders": 4,
+"displacement": 114,
+"power": 91,
+"weight": 2582,
+"zero_to_sixty_mph":     14,
+"year": 73 
+},
+{
+ "name": "Audi 100 LS",
+"economy":     23,
+"cylinders": 4,
+"displacement": 115,
+"power": 95,
+"weight": 2694,
+"zero_to_sixty_mph":     15,
+"year": 75 
+},
+{
+ "name": "Audi 100 LS",
+"economy":     24,
+"cylinders": 4,
+"displacement": 107,
+"power": 90,
+"weight": 2430,
+"zero_to_sixty_mph":   14.5,
+"year": 70 
+},
+{
+ "name": "Audi 4000",
+"economy":   34.3,
+"cylinders": 4,
+"displacement": 97,
+"power": 78,
+"weight": 2188,
+"zero_to_sixty_mph":   15.8,
+"year": 80 
+},
+{
+ "name": "Audi 5000",
+"economy":   20.3,
+"cylinders": 5,
+"displacement": 131,
+"power": 103,
+"weight": 2830,
+"zero_to_sixty_mph":   15.9,
+"year": 78 
+},
+{
+ "name": "Audi 5000S (Diesel)",
+"economy":   36.4,
+"cylinders": 5,
+"displacement": 121,
+"power": 67,
+"weight": 2950,
+"zero_to_sixty_mph":   19.9,
+"year": 80 
+},
+{
+ "name": "Audi Fox",
+"economy":     29,
+"cylinders": 4,
+"displacement": 98,
+"power": 83,
+"weight": 2219,
+"zero_to_sixty_mph":   16.5,
+"year": 74 
+},
+{
+ "name": "BMW 2002",
+"economy":     26,
+"cylinders": 4,
+"displacement": 121,
+"power": 113,
+"weight": 2234,
+"zero_to_sixty_mph":   12.5,
+"year": 70 
+},
+{
+ "name": "BMW 320i",
+"economy":   21.5,
+"cylinders": 4,
+"displacement": 121,
+"power": 110,
+"weight": 2600,
+"zero_to_sixty_mph":   12.8,
+"year": 77 
+},
+{
+ "name": "Buick Century 350",
+"economy":     13,
+"cylinders": 8,
+"displacement": 350,
+"power": 175,
+"weight": 4100,
+"zero_to_sixty_mph":     13,
+"year": 73 
+},
+{
+ "name": "Buick Century Limited",
+"economy":     25,
+"cylinders": 6,
+"displacement": 181,
+"power": 110,
+"weight": 2945,
+"zero_to_sixty_mph":   16.4,
+"year": 82 
+},
+{
+ "name": "Buick Century Luxus (Wagon)",
+"economy":     13,
+"cylinders": 8,
+"displacement": 350,
+"power": 150,
+"weight": 4699,
+"zero_to_sixty_mph":   14.5,
+"year": 74 
+},
+{
+ "name": "Buick Century Special",
+"economy":   20.6,
+"cylinders": 6,
+"displacement": 231,
+"power": 105,
+"weight": 3380,
+"zero_to_sixty_mph":   15.8,
+"year": 78 
+},
+{
+ "name": "Buick Century",
+"economy":     17,
+"cylinders": 6,
+"displacement": 231,
+"power": 110,
+"weight": 3907,
+"zero_to_sixty_mph":     21,
+"year": 75 
+},
+{
+ "name": "Buick Century",
+"economy":   22.4,
+"cylinders": 6,
+"displacement": 231,
+"power": 110,
+"weight": 3415,
+"zero_to_sixty_mph":   15.8,
+"year": 81 
+},
+{
+ "name": "Buick Electra 225 Custom",
+"economy":     12,
+"cylinders": 8,
+"displacement": 455,
+"power": 225,
+"weight": 4951,
+"zero_to_sixty_mph":     11,
+"year": 73 
+},
+{
+ "name": "Buick Estate Wagon (Wagon)",
+"economy":     14,
+"cylinders": 8,
+"displacement": 455,
+"power": 225,
+"weight": 3086,
+"zero_to_sixty_mph":     10,
+"year": 70 
+},
+{
+ "name": "Buick Estate Wagon (Wagon)",
+"economy":   16.9,
+"cylinders": 8,
+"displacement": 350,
+"power": 155,
+"weight": 4360,
+"zero_to_sixty_mph":   14.9,
+"year": 79 
+},
+{
+ "name": "Buick Lesabre Custom",
+"economy":     13,
+"cylinders": 8,
+"displacement": 350,
+"power": 155,
+"weight": 4502,
+"zero_to_sixty_mph":   13.5,
+"year": 72 
+},
+{
+ "name": "Buick Opel Isuzu Deluxe",
+"economy":     30,
+"cylinders": 4,
+"displacement": 111,
+"power": 80,
+"weight": 2155,
+"zero_to_sixty_mph":   14.8,
+"year": 77 
+},
+{
+ "name": "Buick Regal Sport Coupe (Turbo)",
+"economy":   17.7,
+"cylinders": 6,
+"displacement": 231,
+"power": 165,
+"weight": 3445,
+"zero_to_sixty_mph":   13.4,
+"year": 78 
+},
+{
+ "name": "Buick Skyhawk",
+"economy":     21,
+"cylinders": 6,
+"displacement": 231,
+"power": 110,
+"weight": 3039,
+"zero_to_sixty_mph":     15,
+"year": 75 
+},
+{
+ "name": "Buick Skylark 320",
+"economy":     15,
+"cylinders": 8,
+"displacement": 350,
+"power": 165,
+"weight": 3693,
+"zero_to_sixty_mph":   11.5,
+"year": 70 
+},
+{
+ "name": "Buick Skylark Limited",
+"economy":   28.4,
+"cylinders": 4,
+"displacement": 151,
+"power": 90,
+"weight": 2670,
+"zero_to_sixty_mph":     16,
+"year": 79 
+},
+{
+ "name": "Buick Skylark",
+"economy":   20.5,
+"cylinders": 6,
+"displacement": 231,
+"power": 105,
+"weight": 3425,
+"zero_to_sixty_mph":   16.9,
+"year": 77 
+},
+{
+ "name": "Buick Skylark",
+"economy":   26.6,
+"cylinders": 4,
+"displacement": 151,
+"power": 84,
+"weight": 2635,
+"zero_to_sixty_mph":   16.4,
+"year": 81 
+},
+{
+ "name": "Cadillac Eldorado",
+"economy":     23,
+"cylinders": 8,
+"displacement": 350,
+"power": 125,
+"weight": 3900,
+"zero_to_sixty_mph":   17.4,
+"year": 79 
+},
+{
+ "name": "Cadillac Seville",
+"economy":   16.5,
+"cylinders": 8,
+"displacement": 350,
+"power": 180,
+"weight": 4380,
+"zero_to_sixty_mph":   12.1,
+"year": 76 
+},
+{
+ "name": "Chevroelt Chevelle Malibu",
+"economy":     16,
+"cylinders": 6,
+"displacement": 250,
+"power": 105,
+"weight": 3897,
+"zero_to_sixty_mph":   18.5,
+"year": 75 
+},
+{
+ "name": "Chevrolet Bel Air",
+"economy":     15,
+"cylinders": 8,
+"displacement": 350,
+"power": 145,
+"weight": 4440,
+"zero_to_sixty_mph":     14,
+"year": 75 
+},
+{
+ "name": "Chevrolet Camaro",
+"economy":     27,
+"cylinders": 4,
+"displacement": 151,
+"power": 90,
+"weight": 2950,
+"zero_to_sixty_mph":   17.3,
+"year": 82 
+},
+{
+ "name": "Chevrolet Caprice Classic",
+"economy":     13,
+"cylinders": 8,
+"displacement": 400,
+"power": 150,
+"weight": 4464,
+"zero_to_sixty_mph":     12,
+"year": 73 
+},
+{
+ "name": "Chevrolet Caprice Classic",
+"economy":     17,
+"cylinders": 8,
+"displacement": 305,
+"power": 130,
+"weight": 3840,
+"zero_to_sixty_mph":   15.4,
+"year": 79 
+},
+{
+ "name": "Chevrolet Caprice Classic",
+"economy":   17.5,
+"cylinders": 8,
+"displacement": 305,
+"power": 145,
+"weight": 3880,
+"zero_to_sixty_mph":   12.5,
+"year": 77 
+},
+{
+ "name": "Chevrolet Cavalier 2-Door",
+"economy":     34,
+"cylinders": 4,
+"displacement": 112,
+"power": 88,
+"weight": 2395,
+"zero_to_sixty_mph":     18,
+"year": 82 
+},
+{
+ "name": "Chevrolet Cavalier Wagon",
+"economy":     27,
+"cylinders": 4,
+"displacement": 112,
+"power": 88,
+"weight": 2640,
+"zero_to_sixty_mph":   18.6,
+"year": 82 
+},
+{
+ "name": "Chevrolet Cavalier",
+"economy":     28,
+"cylinders": 4,
+"displacement": 112,
+"power": 88,
+"weight": 2605,
+"zero_to_sixty_mph":   19.6,
+"year": 82 
+},
+{
+ "name": "Chevrolet Chevelle Concours (Wagon)",
+"economy":     13,
+"cylinders": 8,
+"displacement": 307,
+"power": 130,
+"weight": 4098,
+"zero_to_sixty_mph":     14,
+"year": 72 
+},
+{
+ "name": "Chevrolet Chevelle Malibu Classic",
+"economy":     16,
+"cylinders": 6,
+"displacement": 250,
+"power": 100,
+"weight": 3781,
+"zero_to_sixty_mph":     17,
+"year": 74 
+},
+{
+ "name": "Chevrolet Chevelle Malibu Classic",
+"economy":   17.5,
+"cylinders": 8,
+"displacement": 305,
+"power": 140,
+"weight": 4215,
+"zero_to_sixty_mph":     13,
+"year": 76 
+},
+{
+ "name": "Chevrolet Chevelle Malibu",
+"economy":     17,
+"cylinders": 6,
+"displacement": 250,
+"power": 100,
+"weight": 3329,
+"zero_to_sixty_mph":   15.5,
+"year": 71 
+},
+{
+ "name": "Chevrolet Chevelle Malibu",
+"economy":     18,
+"cylinders": 8,
+"displacement": 307,
+"power": 130,
+"weight": 3504,
+"zero_to_sixty_mph":     12,
+"year": 70 
+},
+{
+ "name": "Chevrolet Chevette",
+"economy":     29,
+"cylinders": 4,
+"displacement": 85,
+"power": 52,
+"weight": 2035,
+"zero_to_sixty_mph":   22.2,
+"year": 76 
+},
+{
+ "name": "Chevrolet Chevette",
+"economy":     30,
+"cylinders": 4,
+"displacement": 98,
+"power": 68,
+"weight": 2155,
+"zero_to_sixty_mph":   16.5,
+"year": 78 
+},
+{
+ "name": "Chevrolet Chevette",
+"economy":   30.5,
+"cylinders": 4,
+"displacement": 98,
+"power": 63,
+"weight": 2051,
+"zero_to_sixty_mph":     17,
+"year": 77 
+},
+{
+ "name": "Chevrolet Chevette",
+"economy":   32.1,
+"cylinders": 4,
+"displacement": 98,
+"power": 70,
+"weight": 2120,
+"zero_to_sixty_mph":   15.5,
+"year": 80 
+},
+{
+ "name": "Chevrolet Citation",
+"economy":   23.5,
+"cylinders": 6,
+"displacement": 173,
+"power": 110,
+"weight": 2725,
+"zero_to_sixty_mph":   12.6,
+"year": 81 
+},
+{
+ "name": "Chevrolet Citation",
+"economy":     28,
+"cylinders": 4,
+"displacement": 151,
+"power": 90,
+"weight": 2678,
+"zero_to_sixty_mph":   16.5,
+"year": 80 
+},
+{
+ "name": "Chevrolet Citation",
+"economy":   28.8,
+"cylinders": 6,
+"displacement": 173,
+"power": 115,
+"weight": 2595,
+"zero_to_sixty_mph":   11.3,
+"year": 79 
+},
+{
+ "name": "Chevrolet Concours",
+"economy":   17.5,
+"cylinders": 6,
+"displacement": 250,
+"power": 110,
+"weight": 3520,
+"zero_to_sixty_mph":   16.4,
+"year": 77 
+},
+{
+ "name": "Chevrolet Impala",
+"economy":     11,
+"cylinders": 8,
+"displacement": 400,
+"power": 150,
+"weight": 4997,
+"zero_to_sixty_mph":     14,
+"year": 73 
+},
+{
+ "name": "Chevrolet Impala",
+"economy":     13,
+"cylinders": 8,
+"displacement": 350,
+"power": 165,
+"weight": 4274,
+"zero_to_sixty_mph":     12,
+"year": 72 
+},
+{
+ "name": "Chevrolet Impala",
+"economy":     14,
+"cylinders": 8,
+"displacement": 350,
+"power": 165,
+"weight": 4209,
+"zero_to_sixty_mph":     12,
+"year": 71 
+},
+{
+ "name": "Chevrolet Impala",
+"economy":     14,
+"cylinders": 8,
+"displacement": 454,
+"power": 220,
+"weight": 4354,
+"zero_to_sixty_mph":      9,
+"year": 70 
+},
+{
+ "name": "Chevrolet Malibu Classic (Wagon)",
+"economy":   19.2,
+"cylinders": 8,
+"displacement": 267,
+"power": 125,
+"weight": 3605,
+"zero_to_sixty_mph":     15,
+"year": 79 
+},
+{
+ "name": "Chevrolet Malibu",
+"economy":     13,
+"cylinders": 8,
+"displacement": 350,
+"power": 145,
+"weight": 3988,
+"zero_to_sixty_mph":     13,
+"year": 73 
+},
+{
+ "name": "Chevrolet Malibu",
+"economy":   20.5,
+"cylinders": 6,
+"displacement": 200,
+"power": 95,
+"weight": 3155,
+"zero_to_sixty_mph":   18.2,
+"year": 78 
+},
+{
+ "name": "Chevrolet Monte Carlo Landau",
+"economy":   15.5,
+"cylinders": 8,
+"displacement": 350,
+"power": 170,
+"weight": 4165,
+"zero_to_sixty_mph":   11.4,
+"year": 77 
+},
+{
+ "name": "Chevrolet Monte Carlo Landau",
+"economy":   19.2,
+"cylinders": 8,
+"displacement": 305,
+"power": 145,
+"weight": 3425,
+"zero_to_sixty_mph":   13.2,
+"year": 78 
+},
+{
+ "name": "Chevrolet Monte Carlo S",
+"economy":     15,
+"cylinders": 8,
+"displacement": 350,
+"power": 145,
+"weight": 4082,
+"zero_to_sixty_mph":     13,
+"year": 73 
+},
+{
+ "name": "Chevrolet Monte Carlo",
+"economy":     15,
+"cylinders": 8,
+"displacement": 400,
+"power": 150,
+"weight": 3761,
+"zero_to_sixty_mph":    9.5,
+"year": 70 
+} 
+],
+"colorby": "economy",
+"range": [     11,   36.4 ],
+"colors": [ "steelblue", "brown" ],
+"id": "chart" 
+}
+var getColors = d3.scale.linear()
+  .domain(params.range)
+  .range(params.colors)
+  .interpolate(d3.interpolateLab);
+
+var color = function(d) { return getColors(d[params.colorby]); };
+
+  d3.parcoords()("#" + params.dom)
+    .width(params.width)
+    .height(params.height)
+    .margin(params.padding)
+    .data(params.data)
+    .color(color)
+    .alpha(0.4)
+    .render()
+    .shadows()
+    .brushable()  // enable brushing
+    .reorderable(); // enable moving axes
+</script>
+
+
