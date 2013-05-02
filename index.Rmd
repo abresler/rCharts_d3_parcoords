@@ -1,5 +1,5 @@
 ---
-title       : GARCH and MA Outperformance d3 Parallel Coordinates
+title       : GARCH and MA Outperformance using rCharts & d3 Parallel Coordinates
 subtitle    : Applied to French Industry Data Set
 author      : TimelyPortfolio
 framework   : minimal       # {io2012, html5slides, shower, dzslides, ...}
@@ -17,7 +17,7 @@ assets:
 
 ---
 # GARCH and MA Outperformance
-## Now Using d3 Parallel Coordinates
+## Now Using d3 Parallel Coordinates with rCharts
 
 Parallel coordinates become much more useful when they are interactive, so I will recreate one of my favorite blog posts ["Trend is Not Your Friend" Applied to 48 Industries](http://timelyportfolio.blogspot.com/2012/08/trend-is-not-your-friend-applied-to-48.html) and convert the chart to a living breathing d3 parallel coordinates chart courtesy of [Ramnath Vaidyanathan's rCharts](http://ramnathv.github.io/rCharts/) and [Kai Chang's d3.parcoords](http://syntagmatic.github.io/parallel-coordinates/).
 
@@ -30,6 +30,7 @@ require(rCharts)
 #for this project we will look at Industry Portfolios
 #http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/48_Industry_Portfolios_daily.zip
 
+require(latticeExtra)
 require(PerformanceAnalytics)
 require(quantmod)
 
@@ -46,7 +47,7 @@ unzip(my.tempfile,exdir=tempdir(),junkpath=TRUE)
 french_industry <- read.table(file=my.usefile,
                               header = TRUE, sep = "",
                               as.is = TRUE,
-                              skip = 9, nrows=12211)
+                              skip = 9, nrows=22881)
 
 #get dates ready for xts index
 datestoformat <- rownames(french_industry)
@@ -62,7 +63,8 @@ french_industry_xts <- french_industry_xts/100
 
 #delete missing data which is denoted by -0.9999
 french_industry_xts[which(french_industry_xts < -0.99,arr.ind=TRUE)[,1],
-                  unique(which(french_industry_xts < -0.99,arr.ind=TRUE)[,2])] <- 0
+                  unique(which(french_industry_xts < -0.99,arr.ind=TRUE)[,2])] <- NA
+french_industry_xts <- na.omit( french_industry_xts )
 
 #get price series or cumulative growth of 1
 french_industry_price <- cumprod(french_industry_xts+1)
@@ -104,34 +106,45 @@ require(rugarch)
 spec = ugarchspec(
   variance.model=list(garchOrder=c(1,1)),
   mean.model=list(armaOrder=c(1,1), include.mean=T))
+
 #set up function to get garch stats through apply function
 gfNa <- function(data, spec) {
   x <- na.omit(coredata(data))
   gf <- suppressWarnings(ugarchfit(spec=spec, data=x))
-  stats <- coef(gf)
+  stats <- if (is.null( coef( gf ) ) )  {
+    t(rep(NA, 6)) } else t( coef( gf ) )
+  stats <- data.frame( stats )
+  colnames( stats ) <- c( "mu", "ar1", "ma1", "omega", "alpha1", "beta1" )
   return(stats)
 }
+
+#apply fails so convert to for loop
 #do apply to get garch stats across all industries
-gf.stats <- apply(french_industry_xts[,1:NCOL(french_industry_xts)],MARGIN=2,FUN=gfNa,spec=spec)
+#gf.stats <- apply(french_industry_xts[,1:3],MARGIN=2,FUN=gfNa,spec=spec)
+gf.stats <- data.frame()
 
-#plot return comparison by each garch stat
-for (i in 1:NROW(gf.stats)) {
-  plot(y=ret.comp.ann, x=gf.stats[i,],
-       pch=19, col=cc.levels, bty="l",
-       xlab=rownames(gf.stats)[i], ylab="Out(under)Performance of MA")
-  text(y=ret.comp.ann, x=gf.stats[i,], labels=colnames(ret.comp.ann), cex=0.7, pos=2, col=cc.levels)
-}
+for (i in 1:NCOL( french_industry_xts) ) {
+  gf.stats <- rbind(
+    gf.stats,
+    cbind(
+      colnames( french_industry_xts )[i],
+      gfNa ( french_industry_xts[,i], spec = spec )
+    )
+  )
+}  
 
-#thinking through linear model
-#linmod = lm(as.vector(ret.comp.ann)~as.vector(gf.stats[1,]))
-#plot(linmod)
+colnames( gf.stats )[1] <- c("industry")
+rownames( gf.stats ) <- gf.stats$industry
 
-#do parallel coordinates chart with color
+#add the column for return out (under) performance
+gf.stats$PerfDiff <- as.numeric( ret.comp.ann )
+
+#do static parallel coordinates chart with color
 require(MASS)
-parcoord(cbind(t(ret.comp.ann),t(gf.stats)[,c(1,2,5)]),
+parcoord(x = gf.stats[,c(8,2,3,6)],
          col = cc.levels,lwd = 2,
          main = "Out(under)Performance by GARCH Stat")
-parcoord(cbind(t(ret.comp.ann),t(gf.stats)),
+parcoord(x = gf.stats[, -1],
          col = cc.levels,lwd = 2,
          main = "Out(under)Performance by GARCH Stat")
 
@@ -175,9 +188,9 @@ cars <- read.csv('data/cars.csv')
 p1 <- rCharts$new()
 p1$field('lib', 'libraries/widgets/parcoords')
 p1$set(padding = list(top = 24, left = 100, bottom = 12, right = 200))
-p1$set(data = toJSONArray(cars, json = F), 
-  colorby = 'economy', 
-  range = range(cars$economy),
+p1$set(data = toJSONArray(gf.stats, json = F), 
+  colorby = 'industry', 
+  range = range(gf.stats$mu),
   colors = c('steelblue', 'brown')
 )
 p1
