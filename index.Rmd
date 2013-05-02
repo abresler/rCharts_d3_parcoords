@@ -17,16 +17,164 @@ assets:
 
 ---
 # GARCH and MA Outperformance
-# d3 Parallel Coordinates
-## Setup
+## Now Using d3 Parallel Coordinates
 
-```{r results ="asis"}
+Parallel coordinates become much more useful when they are interactive, so I will recreate one of my favorite blog posts ["Trend is Not Your Friend" Applied to 48 Industries](http://timelyportfolio.blogspot.com/2012/08/trend-is-not-your-friend-applied-to-48.html) and convert the chart to a living breathing d3 parallel coordinates chart courtesy of [Ramnath Vaidyanathan's rCharts](http://ramnathv.github.io/rCharts/) and [Kai Chang's d3.parcoords](http://syntagmatic.github.io/parallel-coordinates/).
+
+### Setup
+
+```{r results ="asis", echo = FALSE, message = FALSE, warnings = FALSE}
 require(rCharts)
+
+#get very helpful Ken French data
+#for this project we will look at Industry Portfolios
+#http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/48_Industry_Portfolios_daily.zip
+
+require(PerformanceAnalytics)
+require(quantmod)
+
+#my.url will be the location of the zip file with the data
+my.url="http://mba.tuck.dartmouth.edu/pages/faculty/ken.french/ftp/48_Industry_Portfolios_daily.zip"
+#this will be the temp file set up for the zip file
+my.tempfile<-paste(tempdir(),"\\frenchindustry.zip",sep="")
+#my.usefile is the name of the txt file with the data
+my.usefile<-paste(tempdir(),"\\48_Industry_Portfolios_daily.txt",sep="")
+download.file(my.url, my.tempfile, method="auto", 
+              quiet = FALSE, mode = "wb",cacheOK = TRUE)
+unzip(my.tempfile,exdir=tempdir(),junkpath=TRUE)
+#read space delimited text file extracted from zip
+french_industry <- read.table(file=my.usefile,
+                              header = TRUE, sep = "",
+                              as.is = TRUE,
+                              skip = 9, nrows=12211)
+
+#get dates ready for xts index
+datestoformat <- rownames(french_industry)
+datestoformat <- paste(substr(datestoformat,1,4),
+                       substr(datestoformat,5,6),substr(datestoformat,7,8),sep="-")
+
+#get xts for analysis
+french_industry_xts <- as.xts(french_industry[,1:NCOL(french_industry)],
+                              order.by=as.Date(datestoformat))
+
+#divide by 100 to get percent
+french_industry_xts <- french_industry_xts/100
+
+#delete missing data which is denoted by -0.9999
+french_industry_xts[which(french_industry_xts < -0.99,arr.ind=TRUE)[,1],
+                  unique(which(french_industry_xts < -0.99,arr.ind=TRUE)[,2])] <- 0
+
+#get price series or cumulative growth of 1
+french_industry_price <- cumprod(french_industry_xts+1)
+
+#do 200 day moving average for initial testing
+#just change n to test on other widths or rolling period
+ma <- as.xts(apply(french_industry_price, MARGIN = 2, FUN = runMean, n=200), order.by = index(french_industry_price))
+
+#set up system to enter when price moves above moving average
+#exit when below
+ma.system <- lag(as.xts(
+                  apply(french_industry_price > ma, MARGIN = 2, as.numeric),
+                  order.by = index(french_industry_price)),
+                 k=1) * french_industry_xts
+
+#get returns cumulative and annualized for the entire period
+ret.comp.cumul <- Return.cumulative(ma.system) - Return.cumulative(french_industry_xts)
+ret.bh.ann <- Return.annualized(french_industry_xts)
+ret.comp.ann <- Return.annualized(ma.system) - ret.bh.ann
+rownames(ret.comp.ann) <- "Out(under)performance"
+
+
+#get colors to use for heat map style coloring by out/under performance
+brew <- brewer.pal(name="RdBu",n=5)
+#get color ramp
+cc.brew <- colorRampPalette(brew)
+#apply color ramp
+cc <- cc.brew(length(ret.comp.ann))
+#do colors based on out/under performance but with gray so visible when labelling
+cc.palette <- colorRampPalette(c(cc[1],"gray60",cc[length(cc)]))
+cc.levpalette <- cc.palette(length(ret.comp.ann))
+cc.levels <- level.colors(ret.comp.ann, at = do.breaks(c(-max(abs(ret.comp.ann)),max(abs(ret.comp.ann))),length(ret.comp.ann)),
+                          col.regions = cc.levpalette)
+
+
+
+#using rugarch get garch stats similar to those explored in the research
+require(rugarch)
+spec = ugarchspec(
+  variance.model=list(garchOrder=c(1,1)),
+  mean.model=list(armaOrder=c(1,1), include.mean=T))
+#set up function to get garch stats through apply function
+gfNa <- function(data, spec) {
+  x <- na.omit(coredata(data))
+  gf <- suppressWarnings(ugarchfit(spec=spec, data=x))
+  stats <- coef(gf)
+  return(stats)
+}
+#do apply to get garch stats across all industries
+gf.stats <- apply(french_industry_xts[,1:NCOL(french_industry_xts)],MARGIN=2,FUN=gfNa,spec=spec)
+
+#plot return comparison by each garch stat
+for (i in 1:NROW(gf.stats)) {
+  plot(y=ret.comp.ann, x=gf.stats[i,],
+       pch=19, col=cc.levels, bty="l",
+       xlab=rownames(gf.stats)[i], ylab="Out(under)Performance of MA")
+  text(y=ret.comp.ann, x=gf.stats[i,], labels=colnames(ret.comp.ann), cex=0.7, pos=2, col=cc.levels)
+}
+
+#thinking through linear model
+#linmod = lm(as.vector(ret.comp.ann)~as.vector(gf.stats[1,]))
+#plot(linmod)
+
+#do parallel coordinates chart with color
+require(MASS)
+parcoord(cbind(t(ret.comp.ann),t(gf.stats)[,c(1,2,5)]),
+         col = cc.levels,lwd = 2,
+         main = "Out(under)Performance by GARCH Stat")
+parcoord(cbind(t(ret.comp.ann),t(gf.stats)),
+         col = cc.levels,lwd = 2,
+         main = "Out(under)Performance by GARCH Stat")
+
+
+#get rolling out(under) performance for horizon chart
+#change na to 0 in ma.system returns
+ma.system[which(is.na(ma.system),arr.ind=TRUE)[,1],
+          unique(which(is.na(ma.system),arr.ind=TRUE)[,2])] <- 0
+ma_system_price <- cumprod(1+ma.system)
+roc <- french_industry_price
+#split into groups so do not run out of memory
+for (i in seq(12,48,by=12)) {
+  #get difference in rolling performance
+  roc[,((i-11):(i))] <- ROC(ma_system_price[,((i-11):(i))],n=250,type="discrete") -
+    ROC(french_industry_price[,((i-11):(i))],n=250,type="discrete")
+}
+roc[1:250,] <- 0
+
+#do a horizon plot of all 48 industries with horizonscale of 0.25
+horizonplot(roc,
+            layout=c(1,48),
+            horizonscale=0.25,    #feel free to change to whatever you would like
+            scales = list(tck = c(1,0), y = list(draw = FALSE,relation = "same")),
+            origin = 0,
+            colorkey = FALSE,
+            #since so many industries, we will comment out grid
+            #            panel = function(x, ...) {
+            #              panel.horizonplot(x, ...)
+            #              panel.grid(h=3, v=0,col = "white", lwd=1,lty = 3)
+            #            },
+            ylab = list(rev(colnames(roc)), rot = 0, cex = 0.7, pos = 3), 
+            xlab = NULL,
+            par.settings=theEconomist.theme(box = "gray70"),
+            #use ylab above for labelling so we can specify FALSE for strip and strip.left
+            strip = FALSE,
+            strip.left = FALSE,
+            main = "Moving Averages System Performance on French Daily 48 Industry 1963-2011\n source: http://mba.tuck.dartmouth.edu/pages/faculty/ken.french")
+
 
 cars <- read.csv('data/cars.csv')
 p1 <- rCharts$new()
 p1$field('lib', 'libraries/widgets/parcoords')
-p1$set(padding = list(top = 24, left = 0, bottom = 12, right = 200))
+p1$set(padding = list(top = 24, left = 100, bottom = 12, right = 200))
 p1$set(data = toJSONArray(cars, json = F), 
   colorby = 'economy', 
   range = range(cars$economy),

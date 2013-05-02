@@ -16,8 +16,12 @@ assets:
 
 
 ---
-# GARCH and MA Outperformance d3 Parallel Coordinates
-## Setup
+# GARCH and MA Outperformance
+## Now Using d3 Parallel Coordinates
+
+Parallel coordinates become much more useful when they are interactive, so I will recreate one of my favorite blog posts ["Trend is Not Your Friend" Applied to 48 Industries](http://timelyportfolio.blogspot.com/2012/08/trend-is-not-your-friend-applied-to-48.html) and convert the chart to a living breathing d3 parallel coordinates chart courtesy of [rCharts](http://ramnathv.github.io/rCharts/) and [Kai Chang's d3.parcoords](http://syntagmatic.github.io/parallel-coordinates/).
+
+### Setup
 
 
 ```r
@@ -26,7 +30,7 @@ require(rCharts)
 cars <- read.csv("data/cars.csv")
 p1 <- rCharts$new()
 p1$field("lib", "libraries/widgets/parcoords")
-p1$set(padding = list(top = 24, left = 0, bottom = 12, right = 200))
+p1$set(padding = list(top = 24, left = 100, bottom = 12, right = 200))
 p1$set(data = toJSONArray(cars, json = F), colorby = "economy", range = range(cars$economy), 
     colors = c("steelblue", "brown"))
 p1
@@ -41,7 +45,7 @@ var params = {
 "height":    400,
 "padding": {
  "top":     24,
-"left":      0,
+"left":    100,
 "bottom":     12,
 "right":    200 
 },

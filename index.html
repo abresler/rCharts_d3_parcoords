@@ -48,15 +48,19 @@ install_github('rCharts', 'ramnathv')</code></pre>
       <section>
         
 
-<h1>GARCH and MA Outperformance d3 Parallel Coordinates</h1>
-<h2>Setup</h2>
+<h1>GARCH and MA Outperformance</h1>
+<h2>Now Using d3 Parallel Coordinates</h2>
+
+<p>Parallel coordinates become much more useful when they are interactive, so I will recreate one of my favorite blog posts <a href="http://timelyportfolio.blogspot.com/2012/08/trend-is-not-your-friend-applied-to-48.html">&quot;Trend is Not Your Friend&quot; Applied to 48 Industries</a> and convert the chart to a living breathing d3 parallel coordinates chart courtesy of <a href="http://ramnathv.github.io/rCharts/">rCharts</a> and <a href="http://syntagmatic.github.io/parallel-coordinates/">Kai Chang&#39;s d3.parcoords</a>.</p>
+
+<h3>Setup</h3>
 
 <pre><code class="r">require(rCharts)
 
 cars &lt;- read.csv(&quot;data/cars.csv&quot;)
 p1 &lt;- rCharts$new()
 p1$field(&quot;lib&quot;, &quot;libraries/widgets/parcoords&quot;)
-p1$set(padding = list(top = 24, left = 0, bottom = 12, right = 200))
+p1$set(padding = list(top = 24, left = 100, bottom = 12, right = 200))
 p1$set(data = toJSONArray(cars, json = F), colorby = &quot;economy&quot;, range = range(cars$economy), 
     colors = c(&quot;steelblue&quot;, &quot;brown&quot;))
 p1
@@ -72,7 +76,7 @@ var params = {
 "height":    400,
 "padding": {
  "top":     24,
-"left":      0,
+"left":    100,
 "bottom":     12,
 "right":    200 
 },
