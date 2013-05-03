@@ -1,4 +1,4 @@
-See the finished product [here at gh-pages](http://timelyporfolio.github.io/rCharts_d3_parcoords).
+See the finished product [here at gh-pages](http://timelyporfolio.github.io/rCharts_d3_parcoords/).
 
 To replicate:
 ====================
