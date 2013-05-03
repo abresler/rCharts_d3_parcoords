@@ -1,3 +1,5 @@
+See the finished product [here at gh-pages](http://timelyporfolio.github.io/rCharts_d3_parcoords).
+
 To replicate:
 ====================
 1. Download this repo and uncompress.
